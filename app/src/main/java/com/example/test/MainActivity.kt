@@ -61,43 +61,49 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             TestTheme {
-                val navController = rememberNavController()
-                var startDestination by remember { mutableStateOf<String?>(null) }
+                // Añado un Surface como contenedor raíz para asegurar que el fondo use el color del tema
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    val navController = rememberNavController()
+                    var startDestination by remember { mutableStateOf<String?>(null) }
 
-                LaunchedEffect(Unit) {
-                    val token = tokenManager.token.first()
-                    startDestination = if (token != null) "home" else "login"
-                }
+                    LaunchedEffect(Unit) {
+                        val token = tokenManager.token.first()
+                        startDestination = if (token != null) "home" else "login"
+                    }
 
-                if (startDestination != null) {
-                    NavHost(navController = navController, startDestination = startDestination!!) {
-                        composable("login") {
-                            LoginScreen(
-                                api = api,
-                                tokenManager = tokenManager,
-                                onLoginSuccess = { 
-                                    navController.navigate("home") { 
-                                        popUpTo("login") { inclusive = true } 
-                                    } 
-                                },
-                                onNavigateToRegister = { navController.navigate("register") }
-                            )
-                        }
-                        composable("register") {
-                            RegisterScreen(
-                                api = api,
-                                onRegisterSuccess = { 
-                                    navController.navigate("login") 
-                                },
-                                onNavigateToLogin = { navController.navigate("login") }
-                            )
-                        }
-                        composable("home") {
-                            TodoApp(api, tokenManager, onLogout = {
-                                navController.navigate("login") { 
-                                    popUpTo("home") { inclusive = true } 
-                                }
-                            })
+                    if (startDestination != null) {
+                        NavHost(navController = navController, startDestination = startDestination!!) {
+                            composable("login") {
+                                LoginScreen(
+                                    api = api,
+                                    tokenManager = tokenManager,
+                                    onLoginSuccess = { 
+                                        navController.navigate("home") { 
+                                            popUpTo("login") { inclusive = true } 
+                                        } 
+                                    },
+                                    onNavigateToRegister = { navController.navigate("register") }
+                                )
+                            }
+                            composable("register") {
+                                RegisterScreen(
+                                    api = api,
+                                    onRegisterSuccess = { 
+                                        navController.navigate("login") 
+                                    },
+                                    onNavigateToLogin = { navController.navigate("login") }
+                                )
+                            }
+                            composable("home") {
+                                TodoApp(api, tokenManager, onLogout = {
+                                    navController.navigate("login") { 
+                                        popUpTo("home") { inclusive = true } 
+                                    }
+                                })
+                            }
                         }
                     }
                 }
@@ -355,7 +361,7 @@ fun TodoAppContent(
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("Mis Tareas", fontWeight = FontWeight.ExtraBold) },
+                title = { Text("TODoApp", fontWeight = FontWeight.ExtraBold) },
                 actions = {
                     IconButton(onClick = onLogout) {
                         Icon(Icons.Default.ExitToApp, contentDescription = "Cerrar Sesión")
@@ -372,6 +378,7 @@ fun TodoAppContent(
         Column(
             modifier = Modifier.fillMaxSize().padding(paddingValues).padding(horizontal = 20.dp)
         ) {
+            // Modern Search Bar
             Surface(
                 color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
                 shape = RoundedCornerShape(20.dp),
@@ -380,14 +387,16 @@ fun TodoAppContent(
                 TextField(
                     value = searchQuery,
                     onValueChange = onSearchQueryChange,
-                    placeholder = { Text("Buscar tareas...") },
-                    leadingIcon = { Icon(Icons.Default.Search, null) },
+                    placeholder = { Text("Buscar tareas...", color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)) },
+                    leadingIcon = { Icon(Icons.Default.Search, null, tint = MaterialTheme.colorScheme.primary) },
                     singleLine = true,
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = Color.Transparent,
                         unfocusedContainerColor = Color.Transparent,
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent,
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface
                     ),
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -447,7 +456,12 @@ fun TodoItem(task: TodoTask, onToggle: () -> Unit, onDelete: () -> Unit, onEdit:
             }
             Spacer(modifier = Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text(task.title, fontWeight = FontWeight.Bold, textDecoration = if (task.isCompleted) TextDecoration.LineThrough else null)
+                Text(
+                    text = task.title, 
+                    fontWeight = FontWeight.Bold, 
+                    color = MaterialTheme.colorScheme.onSurface,
+                    textDecoration = if (task.isCompleted) TextDecoration.LineThrough else null
+                )
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Surface(
                         color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.7f),
@@ -457,14 +471,19 @@ fun TodoItem(task: TodoTask, onToggle: () -> Unit, onDelete: () -> Unit, onEdit:
                             task.category.name,
                             modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
                             style = MaterialTheme.typography.labelSmall,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSecondaryContainer
                         )
                     }
                     if (task.alarmTime != null) {
                         Spacer(modifier = Modifier.width(8.dp))
                         Icon(Icons.Default.Notifications, null, modifier = Modifier.size(12.dp), tint = MaterialTheme.colorScheme.primary)
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text(SimpleDateFormat("dd/MM HH:mm", Locale.getDefault()).format(Date(task.alarmTime)), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary)
+                        Text(
+                            text = SimpleDateFormat("dd/MM HH:mm", Locale.getDefault()).format(Date(task.alarmTime)), 
+                            style = MaterialTheme.typography.labelSmall, 
+                            color = MaterialTheme.colorScheme.primary
+                        )
                     }
                 }
             }
@@ -489,6 +508,15 @@ fun AddTaskDialog(taskToEdit: TodoTask?, onDismiss: () -> Unit, onAddTask: (Todo
     val calendar = Calendar.getInstance()
     alarmTime?.let { calendar.timeInMillis = it }
 
+    val textFieldColors = OutlinedTextFieldDefaults.colors(
+        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+        unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+        focusedLabelColor = MaterialTheme.colorScheme.primary,
+        unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        focusedBorderColor = MaterialTheme.colorScheme.primary,
+        unfocusedBorderColor = MaterialTheme.colorScheme.outline
+    )
+
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(if (taskToEdit == null) "Nueva Tarea" else "Editar Tarea", fontWeight = FontWeight.Bold) },
@@ -499,7 +527,8 @@ fun AddTaskDialog(taskToEdit: TodoTask?, onDismiss: () -> Unit, onAddTask: (Todo
                     onValueChange = { title = it },
                     label = { Text("Título") },
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(12.dp),
+                    colors = textFieldColors
                 )
 
                 // Category Dropdown
@@ -514,7 +543,8 @@ fun AddTaskDialog(taskToEdit: TodoTask?, onDismiss: () -> Unit, onAddTask: (Todo
                         label = { Text("Categoría") },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = categoryExpanded) },
                         modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable).fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp)
+                        shape = RoundedCornerShape(12.dp),
+                        colors = textFieldColors
                     )
                     ExposedDropdownMenu(
                         expanded = categoryExpanded,
@@ -544,7 +574,8 @@ fun AddTaskDialog(taskToEdit: TodoTask?, onDismiss: () -> Unit, onAddTask: (Todo
                         label = { Text("Prioridad") },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = priorityExpanded) },
                         modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable).fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp)
+                        shape = RoundedCornerShape(12.dp),
+                        colors = textFieldColors
                     )
                     ExposedDropdownMenu(
                         expanded = priorityExpanded,

@@ -26,6 +26,18 @@ fun LoginScreen(
     var errorMessage by remember { mutableStateOf<String?>(null) }
     val scope = rememberCoroutineScope()
 
+    // Definimos colores constantes para evitar problemas con temas de sistema
+    val textFieldColors = OutlinedTextFieldDefaults.colors(
+        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+        unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+        focusedLabelColor = MaterialTheme.colorScheme.primary,
+        unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        cursorColor = MaterialTheme.colorScheme.primary,
+        errorTextColor = MaterialTheme.colorScheme.error,
+        focusedBorderColor = MaterialTheme.colorScheme.primary,
+        unfocusedBorderColor = MaterialTheme.colorScheme.outline
+    )
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -33,8 +45,16 @@ fun LoginScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text("Bienvenido", fontSize = 32.sp, fontWeight = FontWeight.Bold)
-        Text("Inicia sesión para continuar", color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(
+            text = "Bienvenido", 
+            fontSize = 32.sp, 
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+        Text(
+            text = "Inicia sesión para continuar", 
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
         
         Spacer(modifier = Modifier.height(32.dp))
 
@@ -44,7 +64,8 @@ fun LoginScreen(
             label = { Text("Correo electrónico") },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
-            singleLine = true
+            singleLine = true,
+            colors = textFieldColors
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -56,11 +77,17 @@ fun LoginScreen(
             visualTransformation = PasswordVisualTransformation(),
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
-            singleLine = true
+            singleLine = true,
+            colors = textFieldColors
         )
 
         if (errorMessage != null) {
-            Text(errorMessage!!, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(top = 8.dp))
+            Text(
+                text = errorMessage!!, 
+                color = MaterialTheme.colorScheme.error, 
+                modifier = Modifier.padding(top = 8.dp),
+                fontWeight = FontWeight.Medium
+            )
         }
 
         Spacer(modifier = Modifier.height(32.dp))
@@ -92,14 +119,18 @@ fun LoginScreen(
             },
             modifier = Modifier.fillMaxWidth().height(56.dp),
             shape = RoundedCornerShape(16.dp),
-            enabled = !isLoading
+            enabled = !isLoading,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
+            )
         ) {
-            if (isLoading) CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Color.White)
-            else Text("Iniciar Sesión")
+            if (isLoading) CircularProgressIndicator(modifier = Modifier.size(24.dp), color = MaterialTheme.colorScheme.onPrimary)
+            else Text("Iniciar Sesión", fontSize = 18.sp, fontWeight = FontWeight.Bold)
         }
 
         TextButton(onClick = onNavigateToRegister) {
-            Text("¿No tienes cuenta? Regístrate")
+            Text("¿No tienes cuenta? Regístrate", color = MaterialTheme.colorScheme.primary)
         }
     }
 }
@@ -118,6 +149,17 @@ fun RegisterScreen(
     var errorMessage by remember { mutableStateOf<String?>(null) }
     val scope = rememberCoroutineScope()
 
+    val textFieldColors = OutlinedTextFieldDefaults.colors(
+        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+        unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+        focusedLabelColor = MaterialTheme.colorScheme.primary,
+        unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        cursorColor = MaterialTheme.colorScheme.primary,
+        errorTextColor = MaterialTheme.colorScheme.error,
+        focusedBorderColor = MaterialTheme.colorScheme.primary,
+        unfocusedBorderColor = MaterialTheme.colorScheme.outline
+    )
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -125,7 +167,12 @@ fun RegisterScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text("Crear Cuenta", fontSize = 32.sp, fontWeight = FontWeight.Bold)
+        Text(
+            text = "Crear Cuenta", 
+            fontSize = 32.sp, 
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface
+        )
         
         Spacer(modifier = Modifier.height(32.dp))
 
@@ -135,7 +182,8 @@ fun RegisterScreen(
             label = { Text("Nombre Completo") },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
-            singleLine = true
+            singleLine = true,
+            colors = textFieldColors
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -146,7 +194,8 @@ fun RegisterScreen(
             label = { Text("Correo electrónico") },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
-            singleLine = true
+            singleLine = true,
+            colors = textFieldColors
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -157,7 +206,8 @@ fun RegisterScreen(
             label = { Text("Teléfono (+57...)") },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
-            singleLine = true
+            singleLine = true,
+            colors = textFieldColors
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -169,11 +219,17 @@ fun RegisterScreen(
             visualTransformation = PasswordVisualTransformation(),
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
-            singleLine = true
+            singleLine = true,
+            colors = textFieldColors
         )
 
         if (errorMessage != null) {
-            Text(errorMessage!!, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(top = 8.dp))
+            Text(
+                text = errorMessage!!, 
+                color = MaterialTheme.colorScheme.error, 
+                modifier = Modifier.padding(top = 8.dp),
+                fontWeight = FontWeight.Medium
+            )
         }
 
         Spacer(modifier = Modifier.height(32.dp))
@@ -199,14 +255,18 @@ fun RegisterScreen(
             },
             modifier = Modifier.fillMaxWidth().height(56.dp),
             shape = RoundedCornerShape(16.dp),
-            enabled = !isLoading
+            enabled = !isLoading,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
+            )
         ) {
-            if (isLoading) CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Color.White)
-            else Text("Registrarse")
+            if (isLoading) CircularProgressIndicator(modifier = Modifier.size(24.dp), color = MaterialTheme.colorScheme.onPrimary)
+            else Text("Registrarse", fontSize = 18.sp, fontWeight = FontWeight.Bold)
         }
 
         TextButton(onClick = onNavigateToLogin) {
-            Text("¿Ya tienes cuenta? Inicia sesión")
+            Text("¿Ya tienes cuenta? Inicia sesión", color = MaterialTheme.colorScheme.primary)
         }
     }
 }
